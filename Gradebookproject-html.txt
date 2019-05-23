@@ -1,0 +1,127 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>John & Nick Project</title>
+  </head>
+  <body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">John & Nick's Grade Book - IS 668</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="http://jfumoh80.pythonanywhere.com/student">Student <span class="sr-only">(current)</span></a>
+      </li>
+       <li class="nav-item active">
+        <a class="nav-link" href="http://jfumoh80.pythonanywhere.com/studentroster">Student Roster</a>
+      </li>
+
+    </ul
+    <span class="navbar-text text-right">
+      
+                        <li><a href="/logout/">Log out</a></li>
+                    
+    </span>
+
+  </div>
+</nav>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Student ID</th>
+      <th scope="col">First Name</th>
+      <th scope="col">Last Name</th>
+      <th scope="col">Major</th>
+      <th scope="col">Email</th>
+      <th scope="col">Assignment</th>
+      <th scope="col">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+   
+   <tr>
+       <td>STUD001</td>
+       <td>Nick</td>
+       <td>Johnson</td>
+       <td>Information Systems</td>
+       <td>STUD001@umbc.edu</td>
+       <td><form action='http://jfumoh80.pythonanywhere.com/addassignment?studid=1' method='GET'><input type="hidden" id="studid" name="studid" value=1><button type="submit" class="btn btn-primary" role="button"> Grade</button> </form></td>
+       <td><form action='http://jfumoh80.pythonanywhere.com/delstudent' method='POST'><input type="hidden" id="studentid" name="studentid" value=1><button type="submit" class="btn btn-danger" role="button"> Remove</button> </form></td>
+   </tr>
+    
+   <tr>
+       <td>STUD002</td>
+       <td>John</td>
+       <td>Wilson</td>
+       <td>Information Systems</td>
+       <td>STUD002@umbc.edu</td>
+       <td><form action='http://jfumoh80.pythonanywhere.com/addassignment?studid=2' method='GET'><input type="hidden" id="studid" name="studid" value=2><button type="submit" class="btn btn-primary" role="button"> Grade</button> </form></td>
+       <td><form action='http://jfumoh80.pythonanywhere.com/delstudent' method='POST'><input type="hidden" id="studentid" name="studentid" value=2><button type="submit" class="btn btn-danger" role="button"> Remove</button> </form></td>
+   </tr>
+    
+   <tr>
+       <td>STUD003</td>
+       <td>Tommy</td>
+       <td>Kody</td>
+       <td>Information Systems</td>
+       <td>STUD003@umbc.edu</td>
+       <td><form action='http://jfumoh80.pythonanywhere.com/addassignment?studid=3' method='GET'><input type="hidden" id="studid" name="studid" value=3><button type="submit" class="btn btn-primary" role="button"> Grade</button> </form></td>
+       <td><form action='http://jfumoh80.pythonanywhere.com/delstudent' method='POST'><input type="hidden" id="studentid" name="studentid" value=3><button type="submit" class="btn btn-danger" role="button"> Remove</button> </form></td>
+   </tr>
+    
+   <tr>
+       <td>STUD004</td>
+       <td>Kathy</td>
+       <td>Gary</td>
+       <td>Information Systems</td>
+       <td>STUD004@umbc.edu</td>
+       <td><form action='http://jfumoh80.pythonanywhere.com/addassignment?studid=4' method='GET'><input type="hidden" id="studid" name="studid" value=4><button type="submit" class="btn btn-primary" role="button"> Grade</button> </form></td>
+       <td><form action='http://jfumoh80.pythonanywhere.com/delstudent' method='POST'><input type="hidden" id="studentid" name="studentid" value=4><button type="submit" class="btn btn-danger" role="button"> Remove</button> </form></td>
+   </tr>
+    
+   <tr>
+       <td>STUD005</td>
+       <td>Stanley</td>
+       <td>Gooden</td>
+       <td>Information Systems</td>
+       <td>STUD005@umbc.edu</td>
+       <td><form action='http://jfumoh80.pythonanywhere.com/addassignment?studid=9' method='GET'><input type="hidden" id="studid" name="studid" value=9><button type="submit" class="btn btn-primary" role="button"> Grade</button> </form></td>
+       <td><form action='http://jfumoh80.pythonanywhere.com/delstudent' method='POST'><input type="hidden" id="studentid" name="studentid" value=9><button type="submit" class="btn btn-danger" role="button"> Remove</button> </form></td>
+   </tr>
+    
+  </tbody>
+</table>
+
+<form action='http://jfumoh80.pythonanywhere.com/addstudent' method='post'>
+                      <div class="form-group">
+                        <label for="StudentID">Student ID:
+                        <input type="text" id="StudentID" name="StudentID" class="form-control">
+                        <label for="FirstName" >First Name:
+                        <input type="text" id="FirstName" name="FirstName" class="form-control">
+                        <label for="LastName" >Last Name:
+                        <input type="text" id="LastName" name="LastName" class="form-control">
+                        <label for="Major" >Major:
+                        <input type="text" id="Major" name="Major" class="form-control">
+                        <label for="Email" >Email:
+                        <input type="email" id="Email" name="Email" class="form-control" >
+                        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>

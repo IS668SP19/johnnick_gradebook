@@ -1,0 +1,241 @@
+from datetime import datetime
+from flask import Flask, redirect, render_template, request, url_for
+from flask_login import current_user, login_required, login_user, LoginManager, logout_user, UserMixin
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from werkzeug.security import check_password_hash
+import json
+
+app = Flask(__name__)
+app.config["DEBUG"] = True
+
+SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
+    username="jfumoh80",
+    password="JohnPapa135!",
+    hostname="jfumoh80.mysql.pythonanywhere-services.com",
+    databasename="jfumoh80$gradebook",
+)
+app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+app.secret_key = "John123"
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+class User(UserMixin, db.Model):
+
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+
+    def get_id(self):
+        return self.username
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.filter_by(username=user_id).first()
+
+
+class Course(db.Model):
+
+    __tablename__ = "course"
+
+    id = db.Column(db.Integer, primary_key=True)
+    courseid = db.Column(db.String(200))
+    coursename = db.Column(db.String(200))
+    coursedescription = db.Column(db.String(400))
+    courseschedule = db.Column(db.String(400))
+    coursestartdate = db.Column(db.DateTime, default=datetime.now)
+    courseenddate = db.Column(db.DateTime, default=datetime.now)
+    teachername = db.Column(db.String(4096))
+    assignmentchild = db.relationship("Assignment")
+
+class Assignment(db.Model):
+
+    __tablename__ = "assignment"
+
+    id = db.Column(db.Integer, primary_key=True)
+    assignmentname  = db.Column(db.String(200))
+    assignmentstartdate = db.Column(db.DateTime, default=datetime.now)
+    assignmentenddate = db.Column(db.DateTime, default=datetime.now)
+    assignmentgrade = db.Column(db.Integer)
+    courseparent = db.Column(db.Integer, db.ForeignKey('course.id'))
+
+class Student(db.Model):
+
+    __tablename__ = "Student"
+
+    id = db.Column(db.Integer, primary_key=True)
+    studentid = db.Column(db.String(150))
+    firstname = db.Column(db.String(150))
+    lastname = db.Column(db.String(150))
+    major = db.Column(db.String(150))
+    email  = db.Column(db.String(50))
+    studassign = db.relationship('StudAssignment', backref='studassign1')
+
+    def json(self):
+        return {
+                'id': self.id,
+                'studentid': self.studentid,
+                'firstname': self.firstname,
+                'lastname': self.lastname,
+                'major': self.major,
+                'email': self.email
+        }
+
+
+    def get_all_students():
+        return [Student.json(student) for student in Student.query.all()]
+
+    def __repr__(self):
+        student_object = {
+                'id': self.id,
+                'studentid': self.studentid,
+                'firstname': self.firstname,
+                'lastname': self.lastname,
+                'major': self.major,
+                'email': self.email
+        }
+        return json.dumps(student_object)
+
+
+
+class StudAssignment(db.Model):
+
+    __tablename__ = "StudAssignment"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150))
+    gradeearned = db.Column(db.Integer)
+    maxgrade = db.Column(db.Integer)
+    course = db.Column(db.String(150))
+    studid = db.Column(db.Integer, db.ForeignKey('Student.id'))
+
+
+    def json(self):
+        return {
+                'id': self.id,
+                'name': self.name,
+                'gradeearned': self.gradeearned,
+                'maxgrade': self.maxgrade,
+                'course': self.course
+        }
+
+
+    def getassignments():
+        return [Assignment.json(assignment) for assignment in Assignment.query.all()]
+
+    def __repr__(self):
+        assignment_object = {
+                'id': self.id,
+                'name': self.name,
+                'gradeearned': self.gradeearned,
+                'maxgrade': self.maxgrade,
+                'course': self.course
+        }
+        return json.dumps(assignment_object)
+
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "GET":
+        return render_template("index.html")
+
+    if not current_user.is_authenticated:
+        return redirect(url_for('index'))
+
+
+    return redirect(url_for('index'))
+
+
+
+@app.route("/login/", methods=["GET", "POST"])
+def login():
+    if request.method == "GET":
+        return render_template("login_page.html", error=False)
+
+    user = load_user(request.form["username"])
+    if user is None:
+        return render_template("login_page.html", error=True)
+
+    if not user.check_password(request.form["password"]):
+        return render_template("login_page.html", error=True)
+
+    login_user(user)
+    return redirect(url_for('index'))
+
+
+
+@app.route("/logout/")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+
+@app.route('/student', methods=["GET","POST"])
+def student():
+    if request.method == "GET":
+        result = Student.query.all()
+        return render_template("student.html", result = result)
+
+
+@app.route('/delstudent', methods=["GET","POST"])
+def delstudent():
+    if request.method == "POST":
+        studentid = request.form['studentid']
+        record =  Student.query.filter_by(id = studentid).first()
+        db.session.delete(record)
+        db.session.commit()
+        result = Student.query.all()
+        return render_template("student.html", result = result)
+
+@app.route('/addstudent', methods=["GET","POST"])
+def addstudent():
+    if request.method == "POST":
+        newstudent = Student(studentid=request.form["StudentID"], firstname=request.form["FirstName"], lastname=request.form["LastName"], major=request.form["Major"], email=request.form["Email"])
+        db.session.add(newstudent)
+        db.session.commit()
+        result = Student.query.all()
+        return render_template("student.html", result = result)
+
+
+
+
+@app.route("/addassignment", methods=["GET", "POST"])
+def addassignment():
+    if request.method == "GET":
+        studid = request.args.get('studid')
+        StudAssignmentresult = StudAssignment.query.filter_by(studid = studid).all()
+        return render_template("studassignment.html", result=StudAssignmentresult)
+
+
+@app.route("/studentroster", methods=["GET", "POST"])
+def studentroster():
+    if request.method == "GET":
+        Stud = db.session.query(Student,StudAssignment).join(StudAssignment, StudAssignment.studid == Student.id).all()
+        return render_template("studentroster.html", result=Stud)
+
+
+@app.route("/saveassignment", methods=["GET", "POST"])
+def saveassignment():
+    if request.method == "GET":
+        studid = request.args.get('studid')
+        assgnid = request.args.get('assgnid')
+        grade = request.args.get('grade')
+        studentassignmentrecord = StudAssignment.query.filter_by(id = assgnid).first()
+        studentassignmentrecord.gradeearned = grade
+        db.session.commit()
+        studentassignmentrecord = StudAssignment.query.filter_by(studid = studid).all()
+        return render_template("studassignment.html", result=studentassignmentrecord)
